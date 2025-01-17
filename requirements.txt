@@ -1,9 +1,4 @@
 langchain
 langchain-community
-fastembed
-python-dotenv
-sentence-transformers
-openai==1.55.3
-joblib
 faiss-cpu
-nest-asyncio
+azure-openai
