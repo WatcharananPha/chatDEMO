@@ -1,78 +1,91 @@
 import streamlit as st
 from PIL import Image
 
-# ---  Config Page  ----
+# --- Configuration ---
 st.set_page_config(
     page_title="SSCI Chatbot",
-    page_icon="image\logo.png   ",
-    layout="wide"
+    page_icon="image/logo.png",
+    layout="wide",
+    initial_sidebar_state="expanded"
 )
 
-# --- Style setting ---
 st.markdown("""
 <style>
-    .css-qbe2hs { /* Styles for the bot message bubbles */
-        background-color: rgba(255,255,255,0.1)!important;
-        border-radius:15px!important;
-        padding:0.5em 1.5em 0.5em 1.5em!important;
-        margin-top: 10px;
-        margin-bottom: 10px;
+    /* Sidebar styles */
+    .sidebar .sidebar-content {
+        background-color: #1a1d21; /* Dark background */
+        color: white;
     }
-    .css-10trblm { /* Styles for the user message bubbles */
-        background-color: rgba(239,239,239,0.5)!important;
-        padding:0.5em 1.5em 0.5em 1.5em!important;
-        border-radius:15px!important;
-        margin-top: 10px;
-        margin-bottom: 10px;
+    .sidebar .stButton>button {
+        background-color: #007bff; /* Blue button */
+        color: white;
     }
-    /* Style the chat input area */
-    textarea[data-testid="stChatInput"] {
-        background-color: rgba(239, 239, 239, 0.5) !important;
-        border-radius: 15px !important;
-        padding: 0.5em 1em !important; /* Adjust padding as needed */
-        border: none !important; /* Remove default border */
-        font-size: 16px; /* Adjust font size as needed */
-        outline: none;  /* Remove the focus outline*/
+
+    /* Main area styles */
+    .main {
+        background: linear-gradient(to bottom, #282c34, #212529); /* Dark gradient */
+        color: white;
+        padding: 2rem;
     }
-</style>""", unsafe_allow_html=True)
 
-if "messages" not in st.session_state:
-    st.session_state.messages = []
+    /* Chat input styles */
+    .stChatInputContainer {
+        background-color: rgba(0, 0, 0, 0.3); /* Slightly transparent black */
+        border-radius: 20px;
+        padding: 0.5rem 1rem;
+    }
 
-ssci_logo = Image.open("image\SSCiNewLogo.png")
-col1, col2 = st.columns([1, 15])
+    /* Feature boxes */
+    .feature-box {
+        background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+        border-radius: 10px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+</style>
+""", unsafe_allow_html=True)
 
-if ssci_logo:
-    col1.image(ssci_logo, width=1000)
+# --- Sidebar ---
+st.sidebar.image("image/SSCiNewLogo.png", width=500)
+st.sidebar.button("Clear all conversations")
+if "light_mode" not in st.session_state:
+  st.session_state.light_mode = False
+light_mode = st.sidebar.checkbox("Switch Light Mode", value = st.session_state.light_mode)
+st.session_state.light_mode = light_mode
+st.sidebar.button("Updates & FAQ")
+st.sidebar.button("Log out", type = "primary")
 
-col2.markdown(
-    f"""<p style="font-size:20px">Hello, I am a Chatbot, how may I help you?</p>""",
+# --- Main Area ---
+st.title("Welcome to SSCI")
+st.write("The power of AI at your service - Tame the knowledge!")
+prompt = st.chat_input("Message chatbot :", key="unique_chat_input") 
+st.markdown(
+    """
+    <style>
+    /* Style the send button */
+    button[kind="primary"][data-testid="stChatInputSendButton"] {
+        background-color: #007bff; /* Blue color */
+        color: white;
+        border: none;
+        border-radius: 50%; /* Make it round */
+        width: 40px; /* Adjust size as needed */
+        height: 40px;
+    }
+    button[kind="primary"][data-testid="stChatInputSendButton"] svg {
+        display: block;
+        margin: 0 auto; 
+    }
+
+     [data-testid="stChatInputContainer"]  > label { /* Hides the label */
+       visibility: hidden;
+    }
+     [data-testid="stChatInputContainer"]  { /* Styles for input text container */
+       margin-bottom:20px!important;
+    }
+    /* Other st-chat-input styles */
+    </style>
+    """,
     unsafe_allow_html=True
 )
 
-for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
-        st.markdown(message["content"]) 
-
-if prompt := st.chat_input("Message:"):
-    st.session_state.messages.append({"role": "user", "content": prompt})
-    with st.chat_message("user"):
-        st.markdown(prompt) 
-    if prompt == "Hey, what's a chatbot?":
-        response_text = """
-            A chatbot or chatterbot is a software application used to conduct 
-            an on-line chat conversation via text or text-to-speech, in lieu of 
-            providing direct contact with a live human agent. Designed to 
-            convincingly simulate the way a human would behave as a 
-            conversational partner, chatbot systems typically require 
-            continuous tuning and testing, and many in production remain
-            unable to adequately converse, while none of them can pass the
-            standard Turing test. The term "ChatterBot" was originally coined 
-            by Michael Mauldin (creator of the first Verbot) in 1994 to 
-            describe these conversational programs.
-        """
-    else:
-        response_text = "I'm still learning! Ask me about what a chatbot is."
-    st.session_state.messages.append({"role": "assistant", "content": response_text})
-    with st.chat_message("assistant"):
-        st.markdown(response_text)
+st.markdown("</div>", unsafe_allow_html=True)
